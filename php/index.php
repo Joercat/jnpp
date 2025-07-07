@@ -45,40 +45,37 @@ function handleHealth() {
 function handleTime() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = json_decode(file_get_contents('php://input'), true);
-        $timezone = isset($input['timezone']) ? $input['timezone'] : 'UTC';
+        $name = isset($input['name']) ? $input['name'] : 'World';
     } else {
-        $timezone = isset($_GET['timezone']) ? $_GET['timezone'] : 'UTC';
+        $name = isset($_GET['name']) ? $_GET['name'] : 'World';
     }
     
-    try {
-        $tz = new DateTimeZone($timezone);
-        $now = new DateTime('now', $tz);
-        
-        $response = [
-            'timezone' => $timezone,
-            'current_time' => $now->format('H:i:s'),
-            'date' => $now->format('Y-m-d'),
-            'day_of_week' => $now->format('l'),
-            'unix_timestamp' => $now->getTimestamp(),
-            'formatted' => $now->format('F j, Y g:i A T'),
-            'server' => 'PHP',
-            'timestamp' => $now->format('c')
-        ];
-        
-        echo json_encode($response);
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode([
-            'error' => 'Invalid timezone: ' . $e->getMessage(),
-            'server' => 'PHP'
-        ]);
-    }
+    // Simple string operations instead of timezone handling
+    $currentTime = date('Y-m-d H:i:s');
+    $greeting = "Hello, " . ucfirst($name) . "!";
+    $reversed = strrev($name);
+    $uppercase = strtoupper($name);
+    $length = strlen($name);
+    
+    $response = [
+        'name' => $name,
+        'greeting' => $greeting,
+        'reversed' => $reversed,
+        'uppercase' => $uppercase,
+        'length' => $length,
+        'server_time' => $currentTime,
+        'server' => 'PHP',
+        'timestamp' => date('c')
+    ];
+    
+    echo json_encode($response);
 }
 
 function handleRoot() {
     $response = [
         'message' => 'PHP Server is running!',
         'endpoints' => ['/health', '/time'],
+        'description' => 'Simple string operations and greetings',
         'server' => 'PHP',
         'version' => phpversion()
     ];
