@@ -183,12 +183,12 @@
             <!-- PHP Server -->
             <div class="server-card">
                 <h3>🐘 PHP Server</h3>
-                <p>Date & time operations</p>
+                <p>String operations & greetings</p>
                 <div class="input-group">
-                    <input type="text" id="php-timezone" placeholder="Timezone (e.g., America/New_York)" value="UTC">
-                    <button onclick="callPHP()">Get Time Info</button>
+                    <input type="text" id="php-name" placeholder="Enter your name" value="World">
+                    <button onclick="callPHP()">Generate Greeting</button>
                 </div>
-                <div class="result" id="php-result">Click to get current time</div>
+                <div class="result" id="php-result">Enter a name to get a greeting</div>
             </div>
         </div>
         
@@ -341,27 +341,27 @@ Average: ${data.average}`;
         
         async function callPHP() {
             const resultDiv = document.getElementById('php-result');
-            const timezone = document.getElementById('php-timezone').value || 'UTC';
+            const name = document.getElementById('php-name').value || 'World';
             
             resultDiv.className = 'result loading';
-            resultDiv.textContent = 'Getting time information...';
+            resultDiv.textContent = 'Generating greeting...';
             
             try {
                 const response = await fetch('/api/php/time', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({timezone: timezone})
+                    body: JSON.stringify({name: name})
                 });
                 const data = await response.json();
                 
                 if (response.ok) {
                     resultDiv.className = 'result success';
-                    resultDiv.textContent = `Timezone: ${data.timezone}
-Current time: ${data.current_time}
-Date: ${data.date}
-Day of week: ${data.day_of_week}
-Unix timestamp: ${data.unix_timestamp}
-Formatted: ${data.formatted}`;
+                    resultDiv.textContent = `Name: "${data.name}"
+Greeting: ${data.greeting}
+Reversed: "${data.reversed}"
+Uppercase: "${data.uppercase}"
+Length: ${data.length} characters
+Server time: ${data.server_time}`;
                 } else {
                     throw new Error(data.error || 'Unknown error');
                 }
