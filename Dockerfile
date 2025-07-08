@@ -28,11 +28,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Create app directory
 WORKDIR /app
 
-# Copy all files
-COPY . .
+# Copy package.json first for better caching
+COPY nodejs/package*.json ./nodejs/
 
 # Install Node.js dependencies
 RUN cd nodejs && npm install
+
+# Copy the rest of the application files
+COPY . .
 
 # Install Python dependencies
 RUN pip3 install flask flask-cors
@@ -46,8 +49,11 @@ COPY nginx.conf /etc/nginx/sites-available/default
 # Configure supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Create log directories for supervisor
+RUN mkdir -p /var/log/supervisor
+
 # Expose port
 EXPOSE 80
 
 # Start supervisor
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
